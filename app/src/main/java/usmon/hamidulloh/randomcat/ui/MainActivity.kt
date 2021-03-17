@@ -1,17 +1,18 @@
 package usmon.hamidulloh.randomcat.ui
 
-import androidx.appcompat.app.AppCompatActivity
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import retrofit2.Call
 import retrofit2.Response
 import usmon.hamidulloh.randomcat.R
 import usmon.hamidulloh.randomcat.databinding.ActivityMainBinding
 import usmon.hamidulloh.randomcat.model.Cat
-import usmon.hamidulloh.randomcat.model.CatList
 import usmon.hamidulloh.randomcat.network.CatApi
-import javax.security.auth.callback.Callback
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -19,6 +20,10 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        val toolbar = binding.toolbar
+        setSupportActionBar(toolbar)
+
         fetchPhoto()
 
         binding.refresh.setOnClickListener {
@@ -32,14 +37,25 @@ class MainActivity : AppCompatActivity() {
                 if (response.isSuccessful) {
                     val body = response.body()
 
-                    if (body != null)
+                    if (body != null) {
                         Glide.with(this@MainActivity)
                                 .load(body[0].url)
                                 .error(R.drawable.img_error)
                                 .placeholder(R.drawable.img_loading)
                                 .into(binding.imgRandom)
 
-                    Log.d("TAG", "onResponse: ${body!![0].url}")
+                        openDialog(
+                                width = body[0].width,
+                                height = body[0].height
+                        )
+
+                        shareUrl(body[0].url)
+
+                        binding.web.setOnClickListener {
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(body[0].url))
+                            startActivity(intent)
+                        }
+                    }
                 }
             }
 
@@ -49,5 +65,29 @@ class MainActivity : AppCompatActivity() {
 
         })
 
+    }
+
+    private fun openDialog(width: Int, height: Int) {
+        binding.imageFrame.setOnClickListener {
+            val builder = AlertDialog.Builder(this@MainActivity)
+            builder.setTitle("Original size")
+                    .setMessage("Width: ${width}\n\nHeight: ${height}")
+                    .setPositiveButton("OK") { dialogInterface, which -> }
+
+            val alerDialog = builder.create()
+            alerDialog.setCancelable(false)
+            alerDialog.show()
+        }
+    }
+
+    private fun shareUrl(url: String) {
+        binding.share.setOnClickListener {
+            val shareIntent = Intent().apply {
+                this.action = Intent.ACTION_SEND
+                this.putExtra(Intent.EXTRA_TEXT, url)
+                this.type = "text/plain"
+            }
+            startActivity(shareIntent)
+        }
     }
 }
