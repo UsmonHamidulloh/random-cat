@@ -4,22 +4,37 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
-import androidx.appcompat.app.AlertDialog
+import android.view.Menu
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
+import kotlinx.coroutines.*
 import retrofit2.Call
 import retrofit2.Response
 import usmon.hamidulloh.randomcat.R
+import usmon.hamidulloh.randomcat.database.HistoryDatabase
 import usmon.hamidulloh.randomcat.databinding.ActivityMainBinding
 import usmon.hamidulloh.randomcat.model.Cat
+import usmon.hamidulloh.randomcat.model.History
 import usmon.hamidulloh.randomcat.network.CatApi
+import java.text.SimpleDateFormat
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
+
+    private lateinit var job: Job
+    private lateinit var uiScope : CoroutineScope
+    private lateinit var database : HistoryDatabase
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        job = Job()
+        uiScope = CoroutineScope(Dispatchers.IO + job)
+        database = HistoryDatabase.getInstance(applicationContext)
 
         val toolbar = binding.toolbar
         setSupportActionBar(toolbar)
@@ -31,6 +46,22 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        val inflater = menuInflater
+        inflater.inflate(R.menu.main_menu, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId) {
+            R.id.history -> {
+                val intent = Intent(this, HistoryActivity::class.java)
+                startActivity(intent)
+            }
+        }
+        return true
+    }
+
     private fun fetchPhoto() {
         CatApi.catService.getRandomCat().enqueue(object : retrofit2.Callback<List<Cat>> {
             override fun onResponse(call: Call<List<Cat>>, response: Response<List<Cat>>) {
@@ -38,23 +69,39 @@ class MainActivity : AppCompatActivity() {
                     val body = response.body()
 
                     if (body != null) {
-                        Glide.with(this@MainActivity)
-                                .load(body[0].url)
-                                .error(R.drawable.img_error)
-                                .placeholder(R.drawable.img_loading)
-                                .into(binding.imgRandom)
-
-                        openDialog(
-                                width = body[0].width,
-                                height = body[0].height
+                        val image = History(
+                            width = body[0].width,
+                            height = body[0].height,
+                            url = body[0].url,
+                            date = currentDate()
                         )
 
-                        shareUrl(body[0].url)
+                        Log.d("D", "onResponse: ${currentDate()}")
 
-                        binding.web.setOnClickListener {
-                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(body[0].url))
+                        Glide.with(this@MainActivity)
+                            .load(image.url)
+                            .error(R.drawable.img_error)
+                            .placeholder(R.drawable.img_loading)
+                            .into(binding.imgRandom)
+
+                        openDialog(
+                            width = image.width,
+                            height = image.height
+                        )
+
+                        shareUrl(image.url)
+
+
+                        binding.imageFrame.setOnClickListener {
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(image.url))
                             startActivity(intent)
                         }
+
+                        binding.web.setOnClickListener {
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(image.url))
+                            startActivity(intent)
+                        }
+//                        uiScopeFun(image)
                     }
                 }
             }
@@ -69,14 +116,21 @@ class MainActivity : AppCompatActivity() {
 
     private fun openDialog(width: Int, height: Int) {
         binding.imageFrame.setOnClickListener {
-            val builder = AlertDialog.Builder(this@MainActivity)
-            builder.setTitle("Original size")
-                    .setMessage("Width: ${width}\n\nHeight: ${height}")
-                    .setPositiveButton("OK") { dialogInterface, which -> }
+            /**
+             * setOnLongClickListener bo'lsa alert dialog chiqishi kerak edi !
+             * Ammo negadir LONG click listener qilinsa alert dialog error beryapti
+             *
+             * TODO: ERRORni to'g'irla !
+             */
+        //            val builder = AlertDialog.Builder(this@MainActivity)
+//            builder.setTitle("Original size")
+//                    .setMessage("Width: ${width}\n\nHeight: ${height}")
+//                    .setPositiveButton("OK") { dialogInterface, which -> }
+//
+//            val alerDialog = builder.create()
+//            alerDialog.setCancelable(false)
+//            alerDialog.show()
 
-            val alerDialog = builder.create()
-            alerDialog.setCancelable(false)
-            alerDialog.show()
         }
     }
 
@@ -89,5 +143,20 @@ class MainActivity : AppCompatActivity() {
             }
             startActivity(shareIntent)
         }
+    }
+
+    private fun uiScopeFun(history: History) {
+        uiScope.launch {
+            withContext(Dispatchers.IO) {
+                database.historyDao().insertHistory(history)
+            }
+        }
+    }
+
+    private fun currentDate() : String {
+        val current = Calendar.getInstance()
+        val format = SimpleDateFormat("dd.MM.yyyy hh:mm")
+
+        return format.format(current.time)
     }
 }
