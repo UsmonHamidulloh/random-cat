@@ -5,7 +5,6 @@ import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.GET
 import usmon.hamidulloh.randomcat.model.Cat
-import usmon.hamidulloh.randomcat.model.CatList
 
 private const val BASE_URL = "https://api.thecatapi.com/"
 

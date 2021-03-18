@@ -76,7 +76,7 @@ class MainActivity : AppCompatActivity() {
                             date = currentDate()
                         )
 
-                        Log.d("D", "onResponse: ${currentDate()}")
+                        Log.d("TAG", "onResponse: ${currentDate()}")
 
                         Glide.with(this@MainActivity)
                             .load(image.url)
@@ -91,7 +91,6 @@ class MainActivity : AppCompatActivity() {
 
                         shareUrl(image.url)
 
-
                         binding.imageFrame.setOnClickListener {
                             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(image.url))
                             startActivity(intent)
@@ -101,7 +100,7 @@ class MainActivity : AppCompatActivity() {
                             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(image.url))
                             startActivity(intent)
                         }
-//                        uiScopeFun(image)
+                        writeToRoom(image)
                     }
                 }
             }
@@ -138,14 +137,14 @@ class MainActivity : AppCompatActivity() {
         binding.share.setOnClickListener {
             val shareIntent = Intent().apply {
                 this.action = Intent.ACTION_SEND
-                this.putExtra(Intent.EXTRA_TEXT, url)
+                this.putExtra(Intent.EXTRA_TEXT, "\uD83D\uDD17 Link to image ➜ ${url}")
                 this.type = "text/plain"
             }
             startActivity(shareIntent)
         }
     }
 
-    private fun uiScopeFun(history: History) {
+    private fun writeToRoom(history: History) {
         uiScope.launch {
             withContext(Dispatchers.IO) {
                 database.historyDao().insertHistory(history)

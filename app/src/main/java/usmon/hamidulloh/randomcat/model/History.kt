@@ -8,7 +8,7 @@ import java.util.*
 @Entity(tableName = "history")
 data class History(
     @PrimaryKey(autoGenerate = true)
-    val id: Int? = 0,
+    val id: Int = 0,
 
     @ColumnInfo(name = "date")
     val date: String,
