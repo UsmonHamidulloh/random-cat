@@ -8,7 +8,10 @@ import usmon.hamidulloh.randomcat.R
 import usmon.hamidulloh.randomcat.databinding.ItemImageBinding
 import usmon.hamidulloh.randomcat.model.History
 
-class HistoryAdapter(val itemClickListener: ImageItemCallBack)
+class HistoryAdapter(
+    val itemClickListener: ImageItemCallBack,
+    val itemLongClickListener: ImageItemCallBack,
+    val itemMoreClickListener: ImageItemCallBack)
     : RecyclerView.Adapter<HistoryAdapter.ViewHolder>() {
 
     var images: List<History> = ArrayList()
@@ -33,6 +36,15 @@ class HistoryAdapter(val itemClickListener: ImageItemCallBack)
 
         holder.binding.root.setOnClickListener {
             itemClickListener.onItemClick(image)
+        }
+
+        holder.binding.root.setOnLongClickListener {
+            itemLongClickListener.onItemClick(image)
+            return@setOnLongClickListener true
+        }
+
+        holder.binding.more.setOnClickListener {
+            itemMoreClickListener.onItemClick(image)
         }
     }
 

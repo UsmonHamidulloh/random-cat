@@ -7,8 +7,8 @@
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="10dp"
     android:layout_marginTop="10dp"
-    android:focusable="true"
     android:clickable="true"
+    android:focusable="true"
     android:foreground="?attr/selectableItemBackground"
     app:cardCornerRadius="10dp"
     app:cardElevation="10dp">
@@ -58,6 +58,19 @@
                 android:layout_height="wrap_content" />
 
         </LinearLayout>
+
+        <ImageView
+            android:id="@+id/more"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/ic_share"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackground"
+            android:layout_marginEnd="5dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

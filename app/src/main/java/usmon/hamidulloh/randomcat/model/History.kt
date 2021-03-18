@@ -20,5 +20,8 @@ data class History(
     val height: Int,
 
     @ColumnInfo(name = "url")
-    val url: String
+    val url: String,
+
+    @ColumnInfo(name = "isFavorite")
+    val isFavorite: Boolean = false
 )
