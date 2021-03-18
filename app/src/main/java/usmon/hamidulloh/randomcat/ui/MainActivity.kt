@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import kotlinx.coroutines.*
@@ -114,21 +115,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun openDialog(width: Int, height: Int) {
-        binding.imageFrame.setOnClickListener {
-            /**
-             * setOnLongClickListener bo'lsa alert dialog chiqishi kerak edi !
-             * Ammo negadir LONG click listener qilinsa alert dialog error beryapti
-             *
-             * TODO: ERRORni to'g'irla !
-             */
-        //            val builder = AlertDialog.Builder(this@MainActivity)
-//            builder.setTitle("Original size")
-//                    .setMessage("Width: ${width}\n\nHeight: ${height}")
-//                    .setPositiveButton("OK") { dialogInterface, which -> }
-//
-//            val alerDialog = builder.create()
-//            alerDialog.setCancelable(false)
-//            alerDialog.show()
+        binding.imageFrame.setOnLongClickListener {
+            val builder = AlertDialog.Builder(this@MainActivity)
+            builder.setTitle("Original size")
+                .setMessage("Width: ${width}\n\nHeight: ${height}")
+                .setPositiveButton("OK") { dialogInterface, which -> }
+
+            val alerDialog = builder.create()
+            alerDialog.setCancelable(false)
+            alerDialog.show()
+            return@setOnLongClickListener true
 
         }
     }
