@@ -14,7 +14,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:title="History"
         app:titleTextColor="@color/white"
-        android:background="#D5008577"/>
+        android:background="@color/red2"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/images_list"

@@ -5,15 +5,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.MainActivity">
-    
+
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
+        android:background="@color/red2"
         app:layout_constraintTop_toTopOf="parent"
         app:title="Random Cat"
         app:titleTextColor="@color/white"
-        android:background="#D5008577"/>
+        app:navigationIcon="@drawable/ic_pawprint_2"/>
 
     <androidx.cardview.widget.CardView
         android:id="@+id/image_frame"
@@ -23,11 +24,11 @@
         android:clickable="true"
         android:focusable="true"
         android:foreground="?attr/selectableItemBackground"
-        app:layout_constraintStart_toStartOf="parent"
+        app:cardCornerRadius="20sp"
+        app:cardElevation="10sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toolbar"
-        app:cardElevation="20sp"
-        app:cardCornerRadius="20sp">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar">
 
 
         <ImageView
@@ -35,8 +36,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
-            tools:src="@drawable/img_cat"
-            tools:ignore="ContentDescription" />
+            tools:ignore="ContentDescription"
+            tools:src="@drawable/img_cat"/>
 
     </androidx.cardview.widget.CardView>
 
@@ -47,18 +48,18 @@
         android:clickable="true"
         android:focusable="true"
         android:foreground="?attr/selectableItemBackground"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/image_frame"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:cardCornerRadius="300dp"
-        app:cardElevation="20sp" >
+        app:cardElevation="10sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/image_frame">
 
         <ImageView
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:src="@drawable/ic_refresh"
             android:layout_gravity="center"
+            android:src="@drawable/ic_refresh"
             tools:ignore="ContentDescription" />
 
     </androidx.cardview.widget.CardView>
@@ -70,18 +71,18 @@
         android:clickable="true"
         android:focusable="true"
         android:foreground="?attr/selectableItemBackground"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/refresh"
-        app:layout_constraintTop_toBottomOf="@id/image_frame"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:cardCornerRadius="300dp"
-        app:cardElevation="20sp" >
+        app:cardElevation="10sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/refresh"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/image_frame">
 
         <ImageView
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:src="@drawable/ic_globe"
             android:layout_gravity="center"
+            android:src="@drawable/ic_globe"
             tools:ignore="ContentDescription" />
 
     </androidx.cardview.widget.CardView>
@@ -93,18 +94,18 @@
         android:clickable="true"
         android:focusable="true"
         android:foreground="?attr/selectableItemBackground"
-        app:layout_constraintStart_toEndOf="@id/refresh"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/image_frame"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:cardCornerRadius="300dp"
-        app:cardElevation="20sp" >
+        app:cardElevation="10sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/refresh"
+        app:layout_constraintTop_toBottomOf="@id/image_frame">
 
         <ImageView
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:src="@drawable/ic_next"
             android:layout_gravity="center"
+            android:src="@drawable/ic_next"
             tools:ignore="ContentDescription" />
 
     </androidx.cardview.widget.CardView>

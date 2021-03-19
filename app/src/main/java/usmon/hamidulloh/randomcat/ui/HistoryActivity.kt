@@ -78,7 +78,7 @@ class HistoryActivity : AppCompatActivity() {
         val builder = AlertDialog.Builder(this)
 
         builder.apply {
-            setTitle("Delete ?")
+            setTitle("Delete")
             setMessage("Are you sure you want delete item forever ?")
             setPositiveButton("Delete") { dialogInterface, which ->
                 uiScope.launch {
