@@ -1,7 +1,9 @@
-package usmon.hamidulloh.randomcat.adapter
+package usmon.hamidulloh.randomcat.ui.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import usmon.hamidulloh.randomcat.R
@@ -11,20 +13,21 @@ import usmon.hamidulloh.randomcat.model.History
 class HistoryAdapter(
     val itemClickListener: ImageItemCallBack,
     val itemLongClickListener: ImageItemCallBack,
-    val itemMoreClickListener: ImageItemCallBack)
-    : RecyclerView.Adapter<HistoryAdapter.ViewHolder>() {
+    val itemMoreClickListener: ImageItemCallBack
+) : ListAdapter<History, HistoryAdapter.ViewHolder>(HistoryDiffCallback()) {
 
-    var images: List<History> = ArrayList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val binding = ItemImageBinding.inflate(LayoutInflater.from(parent.context),
-            parent, false)
+        val binding = ItemImageBinding.inflate(
+            LayoutInflater.from(parent.context),
+            parent, false
+        )
 
         return ViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val image = images[position]
+        val image = getItem(position)
 
         holder.binding.date.text = image.date
         holder.binding.size.text = "width = ${image.width}  -   height = ${image.height}"
@@ -48,11 +51,20 @@ class HistoryAdapter(
         }
     }
 
-    override fun getItemCount(): Int = images.size
-
     class ImageItemCallBack(val itemClickListener: (item: History) -> Unit) {
         fun onItemClick(item: History) = itemClickListener(item)
     }
 
     class ViewHolder(val binding: ItemImageBinding) : RecyclerView.ViewHolder(binding.root)
+
+    class HistoryDiffCallback : DiffUtil.ItemCallback<History>() {
+        override fun areItemsTheSame(oldItem: History, newItem: History): Boolean {
+            return oldItem.id == newItem.id
+        }
+
+        override fun areContentsTheSame(oldItem: History, newItem: History): Boolean {
+            return oldItem == newItem
+        }
+
+    }
 }

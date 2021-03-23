@@ -1,28 +1,34 @@
-package usmon.hamidulloh.randomcat.ui
+package usmon.hamidulloh.randomcat.ui.activity
 
 import android.content.Intent
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.Toast
-import android.widget.Toolbar
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.*
 import usmon.hamidulloh.randomcat.R
-import usmon.hamidulloh.randomcat.adapter.HistoryAdapter
+import usmon.hamidulloh.randomcat.database.HistoryDao
 import usmon.hamidulloh.randomcat.database.HistoryDatabase
 import usmon.hamidulloh.randomcat.databinding.ActivityHistoryBinding
 import usmon.hamidulloh.randomcat.model.History
+import usmon.hamidulloh.randomcat.ui.adapter.HistoryAdapter
+import usmon.hamidulloh.randomcat.utils.shareUrlTemplate
+import usmon.hamidulloh.randomcat.viewmodel.HomeViewModel
+import usmon.hamidulloh.randomcat.viewmodelfactory.HomeViewModelFactory
 
 class HistoryActivity : AppCompatActivity() {
+
     private lateinit var binding: ActivityHistoryBinding
     private lateinit var historyAdapter: HistoryAdapter
     private lateinit var job: Job
-    private lateinit var uiScope : CoroutineScope
-    private lateinit var database : HistoryDatabase
+    private lateinit var uiScope: CoroutineScope
+    private lateinit var database: HistoryDatabase
+    private lateinit var historyDao: HistoryDao
+    private lateinit var viewModel: HomeViewModel
+    private lateinit var viewModelFactory: HomeViewModelFactory
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityHistoryBinding.inflate(layoutInflater)
@@ -35,6 +41,10 @@ class HistoryActivity : AppCompatActivity() {
         job = Job()
         uiScope = CoroutineScope(Dispatchers.IO + job)
         database = HistoryDatabase.getInstance(applicationContext)
+        historyDao = database.historyDao()
+
+        viewModelFactory = HomeViewModelFactory(historyDao)
+        viewModel = ViewModelProvider(this, viewModelFactory).get(HomeViewModel::class.java)
 
         binding.toolbar.apply {
             setNavigationIcon(getDrawable(R.drawable.ic_arrow))
@@ -43,29 +53,21 @@ class HistoryActivity : AppCompatActivity() {
             }
         }
 
-
         historyAdapter = HistoryAdapter(HistoryAdapter.ImageItemCallBack {
             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(it.url))
             startActivity(intent)
-        }, HistoryAdapter.ImageItemCallBack {
-            deleteDialog(it)
-            historyAdapter.notifyDataSetChanged()
-        }, HistoryAdapter.ImageItemCallBack {
-            val shareIntent = Intent().apply {
-                this.action = Intent.ACTION_SEND
-                this.putExtra(Intent.EXTRA_TEXT, "\uD83D\uDD17 Link to image ➜ ${it.url}")
-                this.type = "text/plain"
+        },
+            HistoryAdapter.ImageItemCallBack { item ->
+                deleteDialog(item)
+                historyAdapter.notifyDataSetChanged()
+            },
+            HistoryAdapter.ImageItemCallBack { item ->
+                shareUrlTemplate(item.url)
             }
-            startActivity(shareIntent)
-        })
+        )
 
-        val database = HistoryDatabase.getInstance(application)
-        val historyDao = database.historyDao()
-        val liveData = historyDao.queryAllImages()
-
-        liveData.observe(this, {
-            historyAdapter.images = it
-            historyAdapter.notifyDataSetChanged()
+        viewModel.imageQueryViewModel.observe(this, {
+            historyAdapter.submitList(it)
         })
 
         binding.imagesList.apply {
@@ -81,6 +83,7 @@ class HistoryActivity : AppCompatActivity() {
             setTitle("Delete")
             setMessage("Are you sure you want delete item forever ?")
             setPositiveButton("Delete") { dialogInterface, which ->
+
                 uiScope.launch {
                     withContext(Dispatchers.IO) {
                         database.historyDao().deleteHistory(history)

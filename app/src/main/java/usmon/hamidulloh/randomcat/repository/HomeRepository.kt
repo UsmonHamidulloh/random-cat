@@ -7,29 +7,35 @@ import kotlinx.coroutines.withContext
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import usmon.hamidulloh.randomcat.database.HistoryDao
 import usmon.hamidulloh.randomcat.model.Cat
 import usmon.hamidulloh.randomcat.model.History
 import usmon.hamidulloh.randomcat.network.CatApi
 import java.text.SimpleDateFormat
 import java.util.*
 
-class HomeRepository() {
+class HomeRepository(val historyDao: HistoryDao) {
 
     val imageRepository = MutableLiveData<History>()
+    val imagesQuery = historyDao.queryAllImages()
 
     suspend fun fetchImage() {
         withContext(Dispatchers.IO) {
-            CatApi.catService.getRandomCat().enqueue(object : Callback<List<Cat>>{
+            CatApi.catService.getRandomCat().enqueue(object : Callback<List<Cat>> {
                 override fun onResponse(call: Call<List<Cat>>, response: Response<List<Cat>>) {
                     if (response.isSuccessful) {
                         val body = response.body()
                         if (body != null) {
-                            imageRepository.value = History (
+                            val image = History(
                                 width = body[0].width,
                                 height = body[0].height,
                                 url = body[0].url,
                                 date = currentDate()
                             )
+
+                            imageRepository.value = image
+
+                            historyDao.insertHistory(history = image)
                         }
                     }
                 }
@@ -40,7 +46,8 @@ class HomeRepository() {
             })
         }
     }
-    private fun currentDate() : String {
+
+    private fun currentDate(): String {
         val current = Calendar.getInstance()
         val format = SimpleDateFormat("dd.MM.yyyy hh:mm")
 

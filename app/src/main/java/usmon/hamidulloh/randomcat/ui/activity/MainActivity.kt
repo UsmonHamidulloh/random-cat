@@ -1,8 +1,9 @@
-package usmon.hamidulloh.randomcat.ui
+package usmon.hamidulloh.randomcat.ui.activity
 
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AlertDialog
@@ -11,11 +12,14 @@ import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import kotlinx.coroutines.*
 import usmon.hamidulloh.randomcat.R
+import usmon.hamidulloh.randomcat.database.HistoryDao
+import usmon.hamidulloh.randomcat.database.HistoryDatabase
 import usmon.hamidulloh.randomcat.databinding.ActivityMainBinding
 import usmon.hamidulloh.randomcat.model.History
 import usmon.hamidulloh.randomcat.repository.HomeRepository
+import usmon.hamidulloh.randomcat.utils.shareUrlTemplate
 import usmon.hamidulloh.randomcat.viewmodel.HomeViewModel
-import usmon.hamidulloh.randomcat.viewmodel.HomeViewModelFactory
+import usmon.hamidulloh.randomcat.viewmodelfactory.HomeViewModelFactory
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
@@ -27,7 +31,8 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var imageViewModel: HomeViewModel
     private lateinit var imageViewModelFactory: HomeViewModelFactory
-    private lateinit var repository: HomeRepository
+    private lateinit var database: HistoryDatabase
+    private lateinit var historyDao: HistoryDao
 
     private lateinit var image: History
 
@@ -36,9 +41,10 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        database = HistoryDatabase.getInstance(applicationContext)
+        historyDao = database.historyDao()
 
-        repository = HomeRepository()
-        imageViewModelFactory = HomeViewModelFactory(repository)
+        imageViewModelFactory = HomeViewModelFactory(historyDao)
 
         imageViewModel =
             ViewModelProvider(this, imageViewModelFactory).get(HomeViewModel::class.java)
@@ -49,13 +55,12 @@ class MainActivity : AppCompatActivity() {
 
         imageViewModel.imageViewModel.observe(this, {
             image = it
+            Log.d("MainActivity", "image = ${it.id}")
             imageUrlIntent = Intent(Intent.ACTION_VIEW, Uri.parse(image.url))
-            fetchImage()
             clickListeners()
+            fetchImage()
         })
     }
-
-
 
     private fun clickListeners() {
         val tChannelIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://t.me/cat_image"))
@@ -120,13 +125,5 @@ class MainActivity : AppCompatActivity() {
         val alerDialog = builder.create()
         alerDialog.setCancelable(false)
         alerDialog.show()
-    }
-}
-
-private fun shareUrlTemplate(url: String): Intent {
-    return Intent().apply {
-        this.action = Intent.ACTION_SEND
-        this.putExtra(Intent.EXTRA_TEXT, "\uD83D\uDD17 Link to image ➜ ${url}")
-        this.type = "text/plain"
     }
 }
