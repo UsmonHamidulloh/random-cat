@@ -5,14 +5,13 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import usmon.hamidulloh.randomcat.database.HistoryDao
 import usmon.hamidulloh.randomcat.repository.HomeRepository
 
 class HomeViewModel(val repo: HomeRepository) : ViewModel() {
     val job = Job()
     val viewModelScope = CoroutineScope(Dispatchers.IO + job)
 
-    val image = repo.image
+    val imageViewModel = repo.imageRepository
 
     init {
         fetchPhoto()

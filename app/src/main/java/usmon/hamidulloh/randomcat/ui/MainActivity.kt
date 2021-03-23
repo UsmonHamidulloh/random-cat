@@ -11,7 +11,6 @@ import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import kotlinx.coroutines.*
 import usmon.hamidulloh.randomcat.R
-import usmon.hamidulloh.randomcat.database.HistoryDatabase
 import usmon.hamidulloh.randomcat.databinding.ActivityMainBinding
 import usmon.hamidulloh.randomcat.model.History
 import usmon.hamidulloh.randomcat.repository.HomeRepository
@@ -37,7 +36,6 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        imageUrlIntent = Intent(Intent.ACTION_VIEW, Uri.parse(image.url))
 
         repository = HomeRepository()
         imageViewModelFactory = HomeViewModelFactory(repository)
@@ -45,17 +43,19 @@ class MainActivity : AppCompatActivity() {
         imageViewModel =
             ViewModelProvider(this, imageViewModelFactory).get(HomeViewModel::class.java)
 
+
         toolbar = binding.toolbar
         setSupportActionBar(toolbar)
 
-        image = imageViewModel.image
+        imageViewModel.imageViewModel.observe(this, {
+            image = it
+            imageUrlIntent = Intent(Intent.ACTION_VIEW, Uri.parse(image.url))
+            fetchImage()
+            clickListeners()
+        })
     }
 
-    override fun onStart() {
-        super.onStart()
-        fetchImage()
-        clickListeners()
-    }
+
 
     private fun clickListeners() {
         val tChannelIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://t.me/cat_image"))
