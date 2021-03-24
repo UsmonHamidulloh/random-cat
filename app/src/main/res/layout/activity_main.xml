@@ -25,19 +25,34 @@
         android:foreground="?attr/selectableItemBackground"
         app:cardCornerRadius="20sp"
         app:cardElevation="10sp"
-        app:layout_constraintStart_toStartOf="@id/guideline_start"
+        app:layout_constraintBottom_toBottomOf="@id/guideline_bottom"
         app:layout_constraintEnd_toEndOf="@id/guideline_end"
-        app:layout_constraintTop_toTopOf="@id/guideline_top"
-        app:layout_constraintBottom_toBottomOf="@id/guideline_bottom">
+        app:layout_constraintStart_toStartOf="@id/guideline_start"
+        app:layout_constraintTop_toTopOf="@id/guideline_top">
 
-
-        <ImageView
-            android:id="@+id/img_random"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/image_constraint"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scaleType="centerCrop"
-            tools:ignore="ContentDescription"
-            tools:src="@drawable/img_cat" />
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/img_random"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                tools:ignore="ContentDescription" />
+
+            <androidx.core.widget.ContentLoadingProgressBar
+                android:id="@+id/progress_bar"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                app:layout_constraintStart_toStartOf="@id/image_constraint"
+                app:layout_constraintEnd_toEndOf="@id/image_constraint"
+                app:layout_constraintTop_toTopOf="@id/image_constraint"
+                app:layout_constraintBottom_toBottomOf="@id/image_constraint"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
 
     </androidx.cardview.widget.CardView>
 

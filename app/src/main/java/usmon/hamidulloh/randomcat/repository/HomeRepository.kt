@@ -1,5 +1,6 @@
 package usmon.hamidulloh.randomcat.repository
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.*
@@ -18,8 +19,6 @@ class HomeRepository(val historyDao: HistoryDao) {
     val imageRepository = MutableLiveData<History>()
     val imagesQuery = historyDao.queryAllImages()
 
-    private val TAG = "HomeRepository"
-
     private val job = Job()
     private val uiScope = CoroutineScope(Dispatchers.IO + job)
 
@@ -36,13 +35,13 @@ class HomeRepository(val historyDao: HistoryDao) {
                             date = currentDate()
                         )
 
-                        Log.d(TAG, "onResponse: ${image.url}")
+                        Log.d("TAG", "onResponse: ${image.url}")
 
                         imageRepository.value = image
 
                         uiScope.launch {
                             withContext(Dispatchers.IO) {
-                                historyDao.insertHistory(history = image)
+                                historyDao.insertItem(history = image)
                             }
                         }
 
@@ -51,16 +50,33 @@ class HomeRepository(val historyDao: HistoryDao) {
             }
 
             override fun onFailure(call: Call<List<Cat>>, t: Throwable) {
-                Log.d(TAG, "onFailure: ${t.localizedMessage}")
+                Log.d("TAG", "onFailure: ${t.localizedMessage}")
             }
         })
 
     }
 
+    @SuppressLint("SimpleDateFormat")
     private fun currentDate(): String {
         val current = Calendar.getInstance()
         val format = SimpleDateFormat("dd.MM.yyyy hh:mm")
 
         return format.format(current.time)
+    }
+
+    fun deleteItem(history: History) {
+        uiScope.launch {
+            withContext(Dispatchers.IO) {
+                historyDao.deleteItem(history)
+            }
+        }
+    }
+
+    fun deleteAllItem() {
+        uiScope.launch {
+            withContext(Dispatchers.IO) {
+                historyDao.deleteAllItems()
+            }
+        }
     }
 }

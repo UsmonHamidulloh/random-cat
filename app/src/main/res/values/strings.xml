@@ -1,3 +1,5 @@
 <resources>
-    <string name="app_name">Random Cat BETA</string>
+    <string name="app_name">Random Cat</string>
+    <string name="clear_history_menu">Clear history</string>
+    <string name="send_feedback_menu">Send Feedback</string>
 </resources>

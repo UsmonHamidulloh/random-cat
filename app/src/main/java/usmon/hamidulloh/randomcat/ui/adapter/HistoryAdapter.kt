@@ -1,5 +1,6 @@
 package usmon.hamidulloh.randomcat.ui.adapter
 
+import android.provider.ContactsContract.CommonDataKinds.Note
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -9,6 +10,7 @@ import com.bumptech.glide.Glide
 import usmon.hamidulloh.randomcat.R
 import usmon.hamidulloh.randomcat.databinding.ItemImageBinding
 import usmon.hamidulloh.randomcat.model.History
+
 
 class HistoryAdapter(
     val itemClickListener: ImageItemCallBack,

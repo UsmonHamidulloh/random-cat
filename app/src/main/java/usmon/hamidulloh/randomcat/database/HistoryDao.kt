@@ -13,11 +13,11 @@ interface HistoryDao {
     fun queryAllImages() : LiveData<List<History>>
 
     @Insert
-    fun insertHistory(history: History)
+    fun insertItem(history: History)
 
     @Delete
-    fun deleteHistory(history: History)
+    fun deleteItem(history: History)
 
     @Query("DELETE FROM history")
-    fun deleteDataHistory()
+    fun deleteAllItems()
 }
