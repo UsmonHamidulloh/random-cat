@@ -34,6 +34,8 @@ class HistoryActivity : AppCompatActivity() {
         binding = ActivityHistoryBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        val TAG = "HistoryActivity"
+
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowHomeEnabled(true)
@@ -61,8 +63,9 @@ class HistoryActivity : AppCompatActivity() {
                 deleteDialog(item)
                 historyAdapter.notifyDataSetChanged()
             },
+
             HistoryAdapter.ImageItemCallBack { item ->
-                shareUrlTemplate(item.url)
+                startActivity(shareUrlTemplate(item.url))
             }
         )
 

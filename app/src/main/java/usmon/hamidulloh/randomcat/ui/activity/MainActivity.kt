@@ -34,6 +34,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var database: HistoryDatabase
     private lateinit var historyDao: HistoryDao
 
+    private lateinit var tChannelIntent: Intent
+
     private lateinit var image: History
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,29 +43,15 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        database = HistoryDatabase.getInstance(applicationContext)
-        historyDao = database.historyDao()
+        initialize()
 
-        imageViewModelFactory = HomeViewModelFactory(historyDao)
-
-        imageViewModel =
-            ViewModelProvider(this, imageViewModelFactory).get(HomeViewModel::class.java)
-
-
-        toolbar = binding.toolbar
-        setSupportActionBar(toolbar)
+        val TAG = "MainActivity"
 
         imageViewModel.imageViewModel.observe(this, {
             image = it
-            Log.d("MainActivity", "image = ${it.id}")
-            imageUrlIntent = Intent(Intent.ACTION_VIEW, Uri.parse(image.url))
-            clickListeners()
             fetchImage()
+            imageUrlIntent = Intent(Intent.ACTION_VIEW, Uri.parse(image.url))
         })
-    }
-
-    private fun clickListeners() {
-        val tChannelIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://t.me/cat_image"))
 
         toolbar.setNavigationOnClickListener {
             startActivity(tChannelIntent)
@@ -88,8 +76,28 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.refresh.setOnClickListener {
-            fetchImage()
+            imageViewModel.imageViewModel.observe(this, {
+                imageUrlIntent = Intent(Intent.ACTION_VIEW, Uri.parse(image.url))
+                image = it
+                Log.d(TAG, "onCreate: ${image.url}")
+                fetchImage()
+            })
         }
+    }
+
+    private fun initialize() {
+        database = HistoryDatabase.getInstance(applicationContext)
+        historyDao = database.historyDao()
+
+        tChannelIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://t.me/cat_image"))
+
+        imageViewModelFactory = HomeViewModelFactory(historyDao)
+
+        imageViewModel =
+            ViewModelProvider(this, imageViewModelFactory).get(HomeViewModel::class.java)
+
+        toolbar = binding.toolbar
+        setSupportActionBar(toolbar)
     }
 
     private fun fetchImage() {
