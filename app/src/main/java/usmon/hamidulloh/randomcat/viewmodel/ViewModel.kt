@@ -17,6 +17,10 @@ class ViewModel(historyDao: HistoryDao) : ViewModel() {
     val imageViewModel = repo.imageRepository
     val imageQueryViewModel = repo.imagesQuery
 
+    init {
+        fetchPhoto()
+    }
+
     fun deleteItemHistory(history: History) {
         repo.deleteItem(history)
     }
