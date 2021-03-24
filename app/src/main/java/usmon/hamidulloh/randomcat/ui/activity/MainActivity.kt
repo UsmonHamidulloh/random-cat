@@ -16,7 +16,6 @@ import usmon.hamidulloh.randomcat.database.HistoryDao
 import usmon.hamidulloh.randomcat.database.HistoryDatabase
 import usmon.hamidulloh.randomcat.databinding.ActivityMainBinding
 import usmon.hamidulloh.randomcat.model.History
-import usmon.hamidulloh.randomcat.repository.HomeRepository
 import usmon.hamidulloh.randomcat.utils.shareUrlTemplate
 import usmon.hamidulloh.randomcat.viewmodel.HomeViewModel
 import usmon.hamidulloh.randomcat.viewmodelfactory.HomeViewModelFactory
@@ -29,7 +28,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var imageUrlIntent: Intent
 
-    private lateinit var imageViewModel: HomeViewModel
+    private lateinit var homeViewModel: HomeViewModel
     private lateinit var imageViewModelFactory: HomeViewModelFactory
     private lateinit var database: HistoryDatabase
     private lateinit var historyDao: HistoryDao
@@ -47,7 +46,7 @@ class MainActivity : AppCompatActivity() {
 
         val TAG = "MainActivity"
 
-        imageViewModel.imageViewModel.observe(this, {
+        homeViewModel.imageViewModel.observe(this, {
             image = it
             fetchImage()
             imageUrlIntent = Intent(Intent.ACTION_VIEW, Uri.parse(image.url))
@@ -76,10 +75,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.refresh.setOnClickListener {
-            imageViewModel.imageViewModel.observe(this, {
-                imageUrlIntent = Intent(Intent.ACTION_VIEW, Uri.parse(image.url))
+            homeViewModel.fetchPhoto()
+            homeViewModel.imageViewModel.observe(this, {
                 image = it
-                Log.d(TAG, "onCreate: ${image.url}")
+                imageUrlIntent = Intent(Intent.ACTION_VIEW, Uri.parse(image.url))
                 fetchImage()
             })
         }
@@ -93,7 +92,7 @@ class MainActivity : AppCompatActivity() {
 
         imageViewModelFactory = HomeViewModelFactory(historyDao)
 
-        imageViewModel =
+        homeViewModel =
             ViewModelProvider(this, imageViewModelFactory).get(HomeViewModel::class.java)
 
         toolbar = binding.toolbar

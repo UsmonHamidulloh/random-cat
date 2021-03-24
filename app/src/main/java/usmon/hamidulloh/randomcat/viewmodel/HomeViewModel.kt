@@ -20,7 +20,7 @@ class HomeViewModel(historyDao: HistoryDao) : ViewModel() {
         fetchPhoto()
     }
 
-    private fun fetchPhoto() {
+    fun fetchPhoto() {
         viewModelScope.launch {
             repo.fetchImage()
         }

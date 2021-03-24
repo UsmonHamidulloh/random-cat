@@ -36,7 +36,7 @@ class HomeRepository(val historyDao: HistoryDao) {
                             date = currentDate()
                         )
 
-                        Log.d(TAG, "onResponse: ${image.id}")
+                        Log.d(TAG, "onResponse: ${image.url}")
 
                         imageRepository.value = image
 
