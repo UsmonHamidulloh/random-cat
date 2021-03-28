@@ -1,6 +1,5 @@
 package usmon.hamidulloh.randomcat.ui.adapter
 
-import android.provider.ContactsContract.CommonDataKinds.Note
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
