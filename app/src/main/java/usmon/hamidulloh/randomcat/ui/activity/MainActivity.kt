@@ -1,10 +1,14 @@
 package usmon.hamidulloh.randomcat.ui.activity
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
+import android.animation.ObjectAnimator
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
@@ -75,6 +79,7 @@ class MainActivity : AppCompatActivity() {
                 imageUrlIntent = Intent(Intent.ACTION_VIEW, Uri.parse(image.url))
                 fetchImage()
             })
+            animRotate()
         }
     }
 
@@ -132,6 +137,29 @@ class MainActivity : AppCompatActivity() {
         val alertDialog = builder.create()
         alertDialog.setCancelable(false)
         alertDialog.show()
+    }
+
+    private fun animRotate() {
+        val animator = ObjectAnimator.ofFloat(binding.refresh, View.ROTATION, 0F, 360F)
+
+        animator.duration = 1_000
+        animator.disableViewDuringAnimation(binding.refresh)
+
+        animator.start()
+    }
+
+    private fun ObjectAnimator.disableViewDuringAnimation(view: View) {
+        addListener(object : AnimatorListenerAdapter() {
+            override fun onAnimationStart(animation: Animator?) {
+                super.onAnimationStart(animation)
+                view.isEnabled = false
+            }
+
+            override fun onAnimationEnd(animation: Animator?) {
+                super.onAnimationEnd(animation)
+                view.isEnabled = true
+            }
+        })
     }
 
 
