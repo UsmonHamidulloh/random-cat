@@ -21,7 +21,7 @@ import usmon.hamidulloh.randomcat.database.HistoryDatabase
 import usmon.hamidulloh.randomcat.databinding.ActivityMainBinding
 import usmon.hamidulloh.randomcat.model.History
 import usmon.hamidulloh.randomcat.utils.shareUrlTemplate
-import usmon.hamidulloh.randomcat.viewmodel.ViewModel
+import usmon.hamidulloh.randomcat.viewmodel.MainViewModel
 import usmon.hamidulloh.randomcat.viewmodelfactory.ViewModelFactory
 import java.util.*
 
@@ -29,7 +29,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var toolbar: androidx.appcompat.widget.Toolbar
     private lateinit var imageUrlIntent: Intent
-    private lateinit var viewModel: ViewModel
+    private lateinit var mainViewModel: MainViewModel
     private lateinit var imageViewModelFactory: ViewModelFactory
     private lateinit var database: HistoryDatabase
     private lateinit var historyDao: HistoryDao
@@ -44,7 +44,7 @@ class MainActivity : AppCompatActivity() {
 
         initialize()
 
-        viewModel.imageViewModel.observe(this, {
+        mainViewModel.imageViewModel.observe(this, {
             image = it
             fetchImage()
             imageUrlIntent = Intent(Intent.ACTION_VIEW, Uri.parse(image.url))
@@ -73,8 +73,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.refresh.setOnClickListener {
-            viewModel.fetchPhoto()
-            viewModel.imageViewModel.observe(this, {
+            mainViewModel.fetchPhoto()
+            mainViewModel.imageViewModel.observe(this, {
                 image = it
                 imageUrlIntent = Intent(Intent.ACTION_VIEW, Uri.parse(image.url))
                 fetchImage()
@@ -91,8 +91,8 @@ class MainActivity : AppCompatActivity() {
 
         imageViewModelFactory = ViewModelFactory(historyDao)
 
-        viewModel =
-            ViewModelProvider(this, imageViewModelFactory).get(ViewModel::class.java)
+        mainViewModel =
+            ViewModelProvider(this, imageViewModelFactory).get(MainViewModel::class.java)
 
         toolbar = binding.toolbar
         setSupportActionBar(toolbar)

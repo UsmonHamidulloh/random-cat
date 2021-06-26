@@ -10,7 +10,9 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import usmon.hamidulloh.randomcat.R
 import usmon.hamidulloh.randomcat.database.HistoryDao
 import usmon.hamidulloh.randomcat.database.HistoryDatabase
@@ -18,8 +20,8 @@ import usmon.hamidulloh.randomcat.databinding.ActivityHistoryBinding
 import usmon.hamidulloh.randomcat.model.History
 import usmon.hamidulloh.randomcat.ui.adapter.HistoryAdapter
 import usmon.hamidulloh.randomcat.utils.shareUrlTemplate
-import usmon.hamidulloh.randomcat.viewmodel.ViewModel
-import usmon.hamidulloh.randomcat.viewmodelfactory.ViewModelFactory
+import usmon.hamidulloh.randomcat.viewmodel.HistoryViewModel
+import usmon.hamidulloh.randomcat.viewmodelfactory.HistoryViewModelFactory
 
 class HistoryActivity : AppCompatActivity() {
 
@@ -29,8 +31,8 @@ class HistoryActivity : AppCompatActivity() {
     private lateinit var uiScope: CoroutineScope
     private lateinit var database: HistoryDatabase
     private lateinit var historyDao: HistoryDao
-    private lateinit var viewModel: ViewModel
-    private lateinit var viewModelFactory: ViewModelFactory
+    private lateinit var historyViewModel: HistoryViewModel
+    private lateinit var historyViewModelFactory: HistoryViewModelFactory
     private lateinit var sendFeedbackIntent: Intent
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,7 +42,7 @@ class HistoryActivity : AppCompatActivity() {
 
         initialize()
 
-        viewModel.imageQueryViewModel.observe(this, {
+        historyViewModel.imageQueryViewModel.observe(this, {
             historyAdapter.submitList(it)
         })
 
@@ -58,8 +60,12 @@ class HistoryActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.send_feedback_menu -> {startActivity(sendFeedbackIntent)}
-            R.id.clear_history_menu -> {viewModel.deleteAllItems()}
+            R.id.send_feedback_menu -> {
+                startActivity(sendFeedbackIntent)
+            }
+            R.id.clear_history_menu -> {
+                historyViewModel.deleteAllItems()
+            }
         }
         return super.onOptionsItemSelected(item)
     }
@@ -75,8 +81,9 @@ class HistoryActivity : AppCompatActivity() {
         database = HistoryDatabase.getInstance(applicationContext)
         historyDao = database.historyDao()
 
-        viewModelFactory = ViewModelFactory(historyDao)
-        viewModel = ViewModelProvider(this, viewModelFactory).get(ViewModel::class.java)
+        historyViewModelFactory = HistoryViewModelFactory(historyDao)
+        historyViewModel =
+            ViewModelProvider(this, historyViewModelFactory).get(HistoryViewModel::class.java)
 
         binding.toolbar.apply {
             navigationIcon = getDrawable(R.drawable.ic_arrow)
@@ -109,7 +116,7 @@ class HistoryActivity : AppCompatActivity() {
             setTitle("Delete")
             setMessage("Are you sure you want delete item forever ?")
             setPositiveButton("Delete") { _, _ ->
-                viewModel.deleteItemHistory(history)
+                historyViewModel.deleteItemHistory(history)
             }
             setNegativeButton("Cancel") { _, _ -> }
             val alertDialog = builder.create()

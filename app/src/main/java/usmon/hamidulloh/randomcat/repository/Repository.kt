@@ -14,10 +14,9 @@ import usmon.hamidulloh.randomcat.network.CatApi
 import java.text.SimpleDateFormat
 import java.util.*
 
-class HomeRepository(val historyDao: HistoryDao) {
+class Repository(val historyDao: HistoryDao) {
 
     val imageRepository = MutableLiveData<History>()
-    val imagesQuery = historyDao.queryAllImages()
 
     private val job = Job()
     private val uiScope = CoroutineScope(Dispatchers.IO + job)
@@ -62,21 +61,5 @@ class HomeRepository(val historyDao: HistoryDao) {
         val format = SimpleDateFormat("dd.MM.yyyy hh:mm")
 
         return format.format(current.time)
-    }
-
-    fun deleteItem(history: History) {
-        uiScope.launch {
-            withContext(Dispatchers.IO) {
-                historyDao.deleteItem(history)
-            }
-        }
-    }
-
-    fun deleteAllItem() {
-        uiScope.launch {
-            withContext(Dispatchers.IO) {
-                historyDao.deleteAllItems()
-            }
-        }
     }
 }
