@@ -58,7 +58,6 @@ dependencies {
 
     //retrofit2 with Moshi
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
-    implementation 'com.squareup.retrofit2:converter-gson:2.6.2'
     implementation "com.squareup.retrofit2:converter-moshi:2.4.0"
 
     //Room

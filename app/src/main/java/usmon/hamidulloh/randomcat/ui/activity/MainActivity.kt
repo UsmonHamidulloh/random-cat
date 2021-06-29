@@ -72,14 +72,16 @@ class MainActivity : AppCompatActivity() {
             startActivity(shareUrlTemplate(image.url))
         }
 
-        binding.refresh.setOnClickListener {
+        binding.refresh.setOnClickListener { refresh ->
+            animRotate()
+            refresh.isEnabled = true
             mainViewModel.fetchPhoto()
             mainViewModel.imageViewModel.observe(this, {
                 image = it
                 imageUrlIntent = Intent(Intent.ACTION_VIEW, Uri.parse(image.url))
                 fetchImage()
+                refresh.isEnabled = false
             })
-            animRotate()
         }
     }
 

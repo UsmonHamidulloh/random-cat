@@ -9,7 +9,7 @@ import usmon.hamidulloh.randomcat.model.Cat
 private const val BASE_URL = "https://api.thecatapi.com/"
 
 interface CatService {
-    @GET("/v1/images/search")
+    @GET("v1/images/search")
     fun getRandomCat() : Call<List<Cat>>
 }
 
